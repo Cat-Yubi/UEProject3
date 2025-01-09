@@ -39,9 +39,17 @@ void AMyActor::Tick(float DeltaTime)
 
     if (m_fAccTime > 0.5f)
     {
-        Move();
         m_fAccTime = 0.f;
         m_iMoveCount++;
+
+        if (FMath::FRand() < 0.5f)
+            Move();
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed Call Move"));
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Failed Call Move\n")));
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Event Count : %d/10"), m_iMoveCount + 1));
+        }
 
         if (m_iMoveCount >= 9)
         {
@@ -67,14 +75,18 @@ void AMyActor::HandleInput()
 void AMyActor::Move()
 {
     FVector RandomOffset = FVector(FMath::FRandRange(-20.0f, 20.0f), FMath::FRandRange(-20.0f, 20.0f), 0);
-    FVector NewLocation = PlayerCharacter->GetActorLocation() + RandomOffset;
+    FVector PreLocation = PlayerCharacter->GetActorLocation();
+    FVector NewLocation = PreLocation + RandomOffset;
 
     float totDist = RandomOffset.Size(); 
 
     UE_LOG(LogTemp, Warning, TEXT("Move call Move Distance : %f"), totDist); 
     if (GEngine) 
     { 
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Move Distance : %f"), totDist)); 
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Move Distance : %f\n"), totDist));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("After x : %f , y : %f"), NewLocation.X, NewLocation.Y));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Before x : %f , y : %f"), PreLocation.X, PreLocation.Y));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Event Count : %d/10"), m_iMoveCount + 1));
     }
 
     PlayerCharacter->SetActorLocation(NewLocation);
