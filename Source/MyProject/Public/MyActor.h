@@ -21,9 +21,13 @@ public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
-    // Function to handle input
     void HandleInput();
 
-    // Reference to player character
+    void Move();
+
     class AMyProjectCharacter* PlayerCharacter;
+
+    int m_iMoveCount = { 0 };
+    bool m_bMove = { false };
+    float m_fAccTime = { 0.f };
 };

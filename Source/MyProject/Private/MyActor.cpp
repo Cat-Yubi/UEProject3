@@ -16,10 +16,8 @@ void AMyActor::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Get reference to player character
     PlayerCharacter = Cast<AMyProjectCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-    // Bind input action
     if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
     {
         InputComponent = NewObject<UInputComponent>(this);
@@ -34,18 +32,50 @@ void AMyActor::BeginPlay()
 void AMyActor::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    // 함수 호출 확인을 위한 디버그 메시지 
+
+    if (true == m_bMove)
+        m_fAccTime += DeltaTime;
+
+    if (m_fAccTime > 0.5f)
+    {
+        Move();
+        m_fAccTime = 0.f;
+        m_iMoveCount++;
+
+        if (m_iMoveCount >= 9)
+        {
+            m_bMove = false;
+            m_iMoveCount = 0;
+        }
+    }
 }
 
-// Function to handle input
 void AMyActor::HandleInput()
 {
-    if (PlayerCharacter)
+    if (nullptr != PlayerCharacter)
     {
-        // Generate a random location around the player within a distance of 2 units
-        FVector RandomOffset = FVector(FMath::FRandRange(-20.0f, 20.0f), FMath::FRandRange(-20.0f, 20.0f), 0);
-        FVector NewLocation = PlayerCharacter->GetActorLocation() + RandomOffset;
+        UE_LOG(LogTemp, Warning, TEXT("HandleInput call"));
+        m_fAccTime = 0.f;
+        m_bMove = true;
+        m_iMoveCount = 0;
 
-        // Teleport player to the new location
-        PlayerCharacter->SetActorLocation(NewLocation);
+        Move();
     }
+}
+
+void AMyActor::Move()
+{
+    FVector RandomOffset = FVector(FMath::FRandRange(-20.0f, 20.0f), FMath::FRandRange(-20.0f, 20.0f), 0);
+    FVector NewLocation = PlayerCharacter->GetActorLocation() + RandomOffset;
+
+    float totDist = RandomOffset.Size(); 
+
+    UE_LOG(LogTemp, Warning, TEXT("Move call Move Distance : %f"), totDist); 
+    if (GEngine) 
+    { 
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Move Distance : %f"), totDist)); 
+    }
+
+    PlayerCharacter->SetActorLocation(NewLocation);
 }
