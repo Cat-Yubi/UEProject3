@@ -32,7 +32,6 @@ void AMyActor::BeginPlay()
 void AMyActor::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    // 함수 호출 확인을 위한 디버그 메시지 
 
     if (true == m_bMove)
         m_fAccTime += DeltaTime;
